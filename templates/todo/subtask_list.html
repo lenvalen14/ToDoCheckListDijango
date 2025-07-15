@@ -1,0 +1,28 @@
+<form class="d-flex my-2"
+      hx-post="{% url 'add_subtask' parent_task.id %}"
+      hx-target="#subtasks-container-{{ parent_task.id }}"
+      hx-swap="innerHTML"
+      hx-on="htmx:afterRequest: this.reset()">
+    {% csrf_token %}
+    <input type="text" name="title" class="form-control form-control-sm me-2" placeholder="Thêm công việc phụ...">
+    <button type="submit" class="btn btn-secondary btn-sm">Thêm</button>
+</form>
+<ul class="list-group list-group-flush">
+    {% for subtask in subtasks %}
+    <li class="list-group-item list-group-item-light py-1 px-2 d-flex align-items-center">
+        <div class="form-check me-2">
+            <input class="form-check-input" type="checkbox" {% if subtask.completed %}checked{% endif %}
+                   hx-post="{% url 'complete_subtask' subtask.id %}"
+                   hx-target="#subtasks-container-{{ parent_task.id }}"
+                   hx-trigger="change">
+        </div>
+        <span class="flex-grow-1 {% if subtask.completed %}completed text-muted{% endif %}">{{ subtask.title }}</span>
+        <button class="btn btn-outline-danger btn-sm border-0"
+                hx-post="{% url 'delete_subtask' subtask.id %}"
+                hx-target="#subtasks-container-{{ parent_task.id }}"
+                hx-confirm="Bạn có chắc muốn xóa công việc phụ này?">
+            <i class="bi bi-x-lg"></i>
+        </button>
+    </li>
+    {% endfor %}
+</ul>

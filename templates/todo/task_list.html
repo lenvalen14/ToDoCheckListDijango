@@ -1,0 +1,24 @@
+{% extends "todo/base.html" %}
+
+{% block title %}Danh sách công việc{% endblock %}
+
+{% block content %}
+<div class="card shadow-sm">
+    <div class="card-body">
+        <h1 class="card-title text-center mb-4">ToDoCheckList</h1>
+        <form
+            class="d-flex mb-4"
+            hx-post="{% url 'add_task' %}"
+            hx-target="#task-list-wrapper"
+            hx-swap="innerHTML"
+            hx-on="htmx:afterRequest: this.reset()">
+            {% csrf_token %}
+            <input type="text" name="title" class="form-control me-2" placeholder="Thêm công việc mới..." required>
+            <button type="submit" class="btn btn-primary">Thêm</button>
+        </form>
+        <ul class="list-group list-group-flush" id="task-list-wrapper">
+            {% include "todo/task_list_partial.html" %}
+        </ul>
+    </div>
+</div>
+{% endblock %}
