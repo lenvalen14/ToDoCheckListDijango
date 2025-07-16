@@ -1,2 +1,25 @@
-/.venv/
-/.env
+# Môi trường ảo
+.venv/
+venv/
+env/
+
+# Biến môi trường
+*.env
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+
+# IDE
+.vscode/
+.idea/
+
+# Build
+build/
+dist/
+*.egg-info/
+
+# OS
+.DS_Store
+Thumbs.db
