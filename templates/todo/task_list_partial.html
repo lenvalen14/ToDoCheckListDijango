@@ -24,7 +24,7 @@
             {% endif %}
         </a>
         <button class="btn btn-outline-danger btn-sm border-0"
-                hx-post="{% url 'delete_task' task.id %}"
+                hx-delete="{% url 'delete_task' task.id %}"
                 hx-target="#task-list-wrapper"
                 hx-confirm="Bạn có chắc muốn xóa công việc này?">
             <i class="bi bi-trash3"></i>

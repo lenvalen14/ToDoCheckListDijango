@@ -24,7 +24,7 @@ def complete_task(request, task_id):
     return render(request, 'todo/task_list_partial.html', {'tasks': tasks})
 
 def delete_task(request, task_id):
-    if request.method == 'POST':
+    if request.method == 'DELETE':
         task = get_object_or_404(Task, id=task_id)
         task.delete()
     tasks = Task.objects.order_by('completed', '-id')
@@ -62,8 +62,9 @@ def complete_subtask(request, subtask_id):
     return render(request, 'todo/partials/subtask_update_response.html', context)
 
 def delete_subtask(request, subtask_id):
-    if request.method == 'POST':
+    if request.method == 'DELETE':
         subtask = get_object_or_404(SubTask, id=subtask_id)
         task = subtask.task
         subtask.delete()
         return render(request, 'todo/subtask_list.html', {'subtasks': task.subtasks.all(), 'parent_task': task})
+    return None

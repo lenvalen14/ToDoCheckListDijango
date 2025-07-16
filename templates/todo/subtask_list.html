@@ -18,7 +18,7 @@
         </div>
         <span class="flex-grow-1 {% if subtask.completed %}completed text-muted{% endif %}">{{ subtask.title }}</span>
         <button class="btn btn-outline-danger btn-sm border-0"
-                hx-post="{% url 'delete_subtask' subtask.id %}"
+                hx-delete="{% url 'delete_subtask' subtask.id %}"
                 hx-target="#subtasks-container-{{ parent_task.id }}"
                 hx-confirm="Bạn có chắc muốn xóa công việc phụ này?">
             <i class="bi bi-x-lg"></i>
