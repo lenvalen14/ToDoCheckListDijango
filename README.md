@@ -55,7 +55,6 @@ Truy cập http://127.0.0.1:8000/
 
 ## Cấu trúc thư mục
 <pre lang="markdown">
-```bash
 ToDoCheckList/
 ├── .venv/                    # Virtual environment
 ├── templates/                # Thư mục chứa HTML template
@@ -78,50 +77,4 @@ ToDoCheckList/
 ├── .env                      # Biến môi trường
 ├── .gitignore
 ├── manage.py
-  ToDoCheckList/
-├── .venv/                    # Virtual environment
-├── templates/                # Thư mục chứa HTML template
-├── todo/                     # App chính
-│   ├── migrations/
-│   │   └── __init__.py
-│   ├── __init__.py
-│   ├── admin.py
-│   ├── apps.py
-│   ├── models.py             # Khai báo model Task
-│   ├── tests.py
-│   ├── urls.py               # Định nghĩa route cho app
-│   └── views.py              # Logic xử lý request
-├── ToDoCheckList/            # Cấu hình project Django
-│   ├── __init__.py
-│   ├── asgi.py
-│   ├── settings.py
-│   ├── urls.py
-│   └── wsgi.py
-├── .env                      # Biến môi trường
-├── .gitignore
-├── manage.py
-  ToDoCheckList/
-├── .venv/                    # Virtual environment
-├── templates/                # Thư mục chứa HTML template
-├── todo/                     # App chính
-│   ├── migrations/
-│   │   └── __init__.py
-│   ├── __init__.py
-│   ├── admin.py
-│   ├── apps.py
-│   ├── models.py             # Khai báo model Task
-│   ├── tests.py
-│   ├── urls.py               # Định nghĩa route cho app
-│   └── views.py              # Logic xử lý request
-├── ToDoCheckList/            # Cấu hình project Django
-│   ├── __init__.py
-│   ├── asgi.py
-│   ├── settings.py
-│   ├── urls.py
-│   └── wsgi.py
-├── .env                      # Biến môi trường
-├── .gitignore
-├── manage.py
-└── requirements.txt      # Danh sách thư viện
-```
 </pre>
