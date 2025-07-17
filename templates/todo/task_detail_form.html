@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h2>Edit Task: {{ object.title }}</h2>
+
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-primary">Save Changes</button>
+        <a href="{% url 'epic-detail' pk=object.epic.pk %}" class="btn btn-secondary">Cancel</a>
+    </form>
+
+    <hr class="my-4">
+
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h4>Sub-Tasks</h4>
+        <a href="{% url 'subtask-create' task_pk=object.pk %}" class="btn btn-success btn-sm">Add Sub-Task</a>
+    </div>
+
+    <ul class="list-group">
+        {% for subtask in object.subtasks.all %}
+            <li class="list-group-item">
+                {{ subtask.title }} - <span class="badge bg-info">{{ subtask.get_status_display }}</span>
+            </li>
+        {% empty %}
+            <li class="list-group-item">No sub-tasks for this task.</li>
+        {% endfor %}
+    </ul>
+{% endblock %}

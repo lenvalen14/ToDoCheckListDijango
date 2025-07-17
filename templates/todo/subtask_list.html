@@ -1,28 +1,21 @@
-<form class="d-flex my-2"
-      hx-post="{% url 'add_subtask' parent_task.id %}"
-      hx-target="#subtasks-container-{{ parent_task.id }}"
-      hx-swap="innerHTML"
-      hx-on="htmx:afterRequest: this.reset()">
-    {% csrf_token %}
-    <input type="text" name="title" class="form-control form-control-sm me-2" placeholder="Thêm công việc phụ...">
-    <button type="submit" class="btn btn-secondary btn-sm">Thêm</button>
-</form>
-<ul class="list-group list-group-flush">
-    {% for subtask in subtasks %}
-    <li class="list-group-item list-group-item-light py-1 px-2 d-flex align-items-center">
-        <div class="form-check me-2">
-            <input class="form-check-input" type="checkbox" {% if subtask.completed %}checked{% endif %}
-                   hx-post="{% url 'complete_subtask' subtask.id %}"
-                   hx-target="#subtasks-container-{{ parent_task.id }}"
-                   hx-trigger="change">
-        </div>
-        <span class="flex-grow-1 {% if subtask.completed %}completed text-muted{% endif %}">{{ subtask.title }}</span>
-        <button class="btn btn-outline-danger btn-sm border-0"
-                hx-delete="{% url 'delete_subtask' subtask.id %}"
-                hx-target="#subtasks-container-{{ parent_task.id }}"
-                hx-confirm="Bạn có chắc muốn xóa công việc phụ này?">
-            <i class="bi bi-x-lg"></i>
-        </button>
-    </li>
-    {% endfor %}
-</ul>
+{% extends 'base.html' %}
+
+{% block content %}
+    <h2>All Sub-Tasks</h2>
+    <p class="text-muted">A list of all sub-tasks across all tasks, ordered by creation date.</p>
+
+    <div class="list-group">
+        {% for subtask in subtask_list %}
+            <div class="list-group-item">
+                <div class="d-flex w-100 justify-content-between">
+                    <h5 class="mb-1">{{ subtask.title }}</h5>
+                    <small>Created: {{ subtask.created_at|date:"Y-m-d" }}</small>
+                </div>
+                <p class="mb-1">Part of Task: {{ subtask.task.title }}</p>
+                <small>Status: <span class="badge bg-info">{{ subtask.get_status_display }}</span></small>
+            </div>
+        {% empty %}
+            <p class="list-group-item">No sub-tasks found.</p>
+        {% endfor %}
+    </div>
+{% endblock %}

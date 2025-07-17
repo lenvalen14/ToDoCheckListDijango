@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block title %}{{ epic.title }}{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <a href="{% url 'epic-list' %}" class="btn btn-outline-secondary rounded-4 px-3 py-1 fw-semibold">
+        <i class="bi bi-arrow-left"></i> Quay lại danh sách Epics
+    </a>
+    <a href="{% url 'task-create' epic.pk %}" class="btn btn-dark px-3 py-1 rounded-4 shadow-sm d-flex align-items-center gap-2" style="font-size: 1rem;">
+        <span class="fs-5">+</span> <span class="fw-semibold">Thêm Task mới</span>
+    </a>
+</div>
+<div class="bg-white rounded-4 shadow-sm p-4 mb-4 border border-1">
+    <h2 class="fw-bold mb-1">{{ epic.title }}</h2>
+    <div class="text-muted mb-2">{{ epic.description }}</div>
+</div>
+<h3 class="h5 mb-3 fw-semibold">Danh sách nhiệm vụ</h3>
+<div class="d-flex flex-column gap-3" id="task_list">
+    {% for task in epic.tasks.all %}
+         <a href="{% url 'task-detail' task.pk %}" class="text-decoration-none">
+            {% include 'todo/task_list_item.html' with task=task %}
+         </a>
+    {% empty %}
+        <div class="text-muted text-center mt-4">Chưa có nhiệm vụ nào cho epic này.</div>
+    {% endfor %}
+</div>
+{% endblock %}

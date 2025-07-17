@@ -1,14 +1,25 @@
 from django.urls import path
-from . import views
+from .views import (
+    EpicListView,
+    EpicCreateView,
+    EpicUpdateView,
+    TaskListView,
+    SubTaskListView,
+    TaskCreateView,
+    TaskUpdateView, EpicDetailView, SubTaskCreateView, UpdateSubTaskStatusView, DeleteSubTaskView
+)
 
 urlpatterns = [
-    path('', views.task_list, name='task_list'),
-    path('add/', views.add_task, name='add_task'),
-    path('complete/<int:task_id>/', views.complete_task, name='complete_task'),
-    path('delete/<int:task_id>/', views.delete_task, name='delete_task'),
-
-    path('task/<int:task_id>/subtasks/', views.get_subtasks, name='get_subtasks'),
-    path('task/<int:task_id>/add-subtask/', views.add_subtask, name='add_subtask'),
-    path('subtask/complete/<int:subtask_id>/', views.complete_subtask, name='complete_subtask'),
-    path('subtask/delete/<int:subtask_id>/', views.delete_subtask, name='delete_subtask'),
+    path('', EpicListView.as_view(), name='epic-list'),
+    path('epic/add/', EpicCreateView.as_view(), name='epic-create'),
+    path('epic/<int:pk>/', EpicDetailView.as_view(), name='epic-detail'),
+    path('epic/<int:pk>/update/', EpicUpdateView.as_view(), name='epic-update'),
+    path('tasks/', TaskListView.as_view(), name='task-list-all'),
+    path('epic/<int:epic_pk>/task/add/', TaskCreateView.as_view(), name='task-create'),
+    path('task/<int:pk>/update/', TaskUpdateView.as_view(), name='task-update'),
+    path('task/task/<int:pk>/', TaskUpdateView.as_view(), name='task-detail'),
+    path('task/<int:task_pk>/subtask/add/', SubTaskCreateView.as_view(), name='subtask-create'),
+    path('task/<int:task_pk>/subtasks/', SubTaskListView.as_view(), name='subtask-list'),
+    path('subtask/<int:pk>/update-status/', UpdateSubTaskStatusView.as_view(), name='update_subtask_status'),
+    path('subtask/<int:pk>/delete/', DeleteSubTaskView.as_view(), name='delete_subtask')
 ]

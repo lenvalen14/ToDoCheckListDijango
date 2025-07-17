@@ -1,70 +1,107 @@
-from django.shortcuts import render, get_object_or_404
-from .models import Task, SubTask
+from django.shortcuts import get_object_or_404
+from django.urls import reverse_lazy, reverse
+from django.views.generic import ListView, DetailView, CreateView, UpdateView, View
+from django.template.loader import render_to_string
+from django.http import HttpResponse
 
-# --- Views cho Task chính ---
-def task_list(request):
-    tasks = Task.objects.order_by('completed', '-id')
-    return render(request, 'todo/task_list.html', {'tasks': tasks})
+from .forms import TaskForm
+from .models import Task, SubTask, Epic
 
-def add_task(request):
-    if request.method == 'POST':
-        title = request.POST.get('title')
-        if title:
-            Task.objects.create(title=title)
-    tasks = Task.objects.order_by('completed', '-id')
-    return render(request, 'todo/task_list_partial.html', {'tasks': tasks})
 
-def complete_task(request, task_id):
-    task = get_object_or_404(Task, id=task_id)
-    new_status = not task.completed
-    task.completed = new_status
-    task.save()
-    task.subtasks.update(completed=new_status)
-    tasks = Task.objects.order_by('completed', '-id')
-    return render(request, 'todo/task_list_partial.html', {'tasks': tasks})
+class EpicListView(ListView):
+    model = Epic
+    queryset = Epic.objects.all()
+    context_object_name = 'epic_list'
+    template_name = 'todo/epic_list.html'
 
-def delete_task(request, task_id):
-    if request.method == 'DELETE':
-        task = get_object_or_404(Task, id=task_id)
-        task.delete()
-    tasks = Task.objects.order_by('completed', '-id')
-    return render(request, 'todo/task_list_partial.html', {'tasks': tasks})
+class EpicDetailView(DetailView):
+    model = Epic
+    template_name = 'todo/epic_detail.html'
+    context_object_name = 'epic'
 
-# --- Views cho SubTask ---
-def get_subtasks(request, task_id):
-    task = get_object_or_404(Task, id=task_id)
-    return render(request, 'todo/subtask_list.html', {'subtasks': task.subtasks.all(), 'parent_task': task})
+class EpicCreateView(CreateView):
+    model = Epic
+    template_name = 'todo/epic_form.html'
+    fields = ['title', 'description']
+    success_url = reverse_lazy('epic-list')
 
-def add_subtask(request, task_id):
-    task = get_object_or_404(Task, id=task_id)
-    if request.method == 'POST':
-        title = request.POST.get('title')
-        if title:
-            SubTask.objects.create(title=title, task=task)
-    return render(request, 'todo/subtask_list.html', {'subtasks': task.subtasks.all(), 'parent_task': task})
+class EpicUpdateView(UpdateView):
+    model = Epic
+    template_name = 'todo/epic_form.html'
+    fields = ['title', 'description']
+    success_url = reverse_lazy('epic-list')
 
-def complete_subtask(request, subtask_id):
-    subtask = get_object_or_404(SubTask, id=subtask_id)
-    subtask.completed = not subtask.completed
-    subtask.save()
-    task = subtask.task
-    if task.all_subtasks_completed():
-        task.completed = True
-    else:
-        task.completed = False
-    task.save()
-    all_tasks = Task.objects.order_by('completed', '-id')
-    context = {
-        'subtasks': task.subtasks.all(),
-        'parent_task': task,
-        'tasks': all_tasks
-    }
-    return render(request, 'todo/partials/subtask_update_response.html', context)
+class SubTaskListView(ListView):
+    model = SubTask
+    queryset = SubTask.objects.all()
+    context_object_name = 'subtask_list'
+    template_name = "todo/subtask_list.html"
+    ordering = '-created_at'
 
-def delete_subtask(request, subtask_id):
-    if request.method == 'DELETE':
-        subtask = get_object_or_404(SubTask, id=subtask_id)
+class SubTaskCreateView(CreateView):
+    model = SubTask
+    fields = ['title', 'status']
+    template_name = 'todo/subtask_form.html'
+
+    def form_valid(self, form):
+        task = get_object_or_404(Task, pk=self.kwargs['task_pk'])
+        form.instance.task = task
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        task_pk = self.object.task.pk
+        return reverse('task-update', kwargs={'pk': task_pk})
+
+class UpdateSubTaskStatusView(View):
+    def post(self, request, pk):
+        subtask = get_object_or_404(SubTask, pk=pk)
+        status = request.POST.get('status')
+        if status in dict(SubTask._meta.get_field('status').choices):
+            subtask.status = status
+            subtask.save()
+        subtasks = SubTask.objects.filter(task=subtask.task)
+        html = render_to_string('todo/subtask_list.html', {'subtask_list': subtasks})
+        return HttpResponse(html)
+
+class TaskListView(ListView):
+    model = Task
+    queryset = Task.objects.all()
+    context_object_name = 'task_list'
+    template_name = 'todo/task_list.html'
+    ordering = '-start_day'
+
+class TaskCreateView(CreateView):
+    model = Task
+    form_class = TaskForm
+    context_object_name = 'task'
+    template_name = 'todo/task_create_page.html'
+
+    def form_valid(self, form):
+        epic_pk = self.kwargs.get('epic_pk')
+
+        epic = get_object_or_404(Epic, pk=epic_pk)
+
+        form.instance.epic = epic
+
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        return reverse('epic-detail', kwargs={'pk': self.object.epic.pk})
+
+class TaskUpdateView(UpdateView):
+    model = Task
+    form_class = TaskForm
+    context_object_name = 'task'
+    template_name = "todo/task_detail_form.html"
+
+    def get_success_url(self):
+        return reverse('epic-detail', kwargs={'pk': self.object.epic.pk})
+
+class DeleteSubTaskView(View):
+    def delete(self, request, pk):
+        subtask = get_object_or_404(SubTask, pk=pk)
         task = subtask.task
         subtask.delete()
-        return render(request, 'todo/subtask_list.html', {'subtasks': task.subtasks.all(), 'parent_task': task})
-    return None
+        subtasks = SubTask.objects.filter(task=task)
+        html = render_to_string('todo/subtask_list.html', {'subtask_list': subtasks})
+        return HttpResponse(html)
