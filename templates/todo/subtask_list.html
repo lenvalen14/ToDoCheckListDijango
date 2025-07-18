@@ -1,21 +1,28 @@
-{% extends 'base.html' %}
+{% for subtask in task.subtasks.all %}
+<div class="subtask-item">
+    <span>{{ subtask.title }}</span>
+    <div style="display: flex; align-items: center; gap: 0.5rem;">
+        <select
+            class="subtask-select
+                {% if subtask.status == 'COMPLETED' %}
+                    status-badge-completed
+                {% elif subtask.status == 'IN_PROGRESS' %}
+                    status-badge-inprogress
+                {% elif subtask.status == 'BLOCKED' %}
+                    status-badge-block
+                {% else %}
+                    status-badge-todo
+                {% endif %}"
+            onchange="handleStatusChange(this, {{ subtask.pk }})">
 
-{% block content %}
-    <h2>All Sub-Tasks</h2>
-    <p class="text-muted">A list of all sub-tasks across all tasks, ordered by creation date.</p>
-
-    <div class="list-group">
-        {% for subtask in subtask_list %}
-            <div class="list-group-item">
-                <div class="d-flex w-100 justify-content-between">
-                    <h5 class="mb-1">{{ subtask.title }}</h5>
-                    <small>Created: {{ subtask.created_at|date:"Y-m-d" }}</small>
-                </div>
-                <p class="mb-1">Part of Task: {{ subtask.task.title }}</p>
-                <small>Status: <span class="badge bg-info">{{ subtask.get_status_display }}</span></small>
-            </div>
-        {% empty %}
-            <p class="list-group-item">No sub-tasks found.</p>
-        {% endfor %}
+            <option value="TODO" {% if subtask.status == 'TODO' %}selected{% endif %}>Chờ thực hiện</option>
+            <option value="IN_PROGRESS" {% if subtask.status == 'IN_PROGRESS' %}selected{% endif %}>Đang thực hiện</option>
+            <option value="COMPLETED" {% if subtask.status == 'COMPLETED' %}selected{% endif %}>Hoàn thành</option>
+            <option value="BLOCK" {% if subtask.status == 'BLOCK' %}selected{% endif %}>Chặn</option>
+        </select>
+        <button type="button" class="btn-danger" onclick="deleteSubTask({{ subtask.pk }})">&#128465;</button>
     </div>
-{% endblock %}
+</div>
+{% empty %}
+<p style="color: var(--text-muted); text-align: center; font-size: 0.9rem;">Chưa có nhiệm vụ con nào.</p>
+{% endfor %}

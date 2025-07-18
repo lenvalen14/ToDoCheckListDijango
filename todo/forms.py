@@ -13,12 +13,22 @@ class EpicForm(forms.ModelForm):
 class TaskForm(forms.ModelForm):
     class Meta:
         model = Task
+        fields = ['title', 'start_day', 'duration']
+        widgets = {
+            'title': forms.TextInput(attrs={'class': 'form-control'}),
+            'start_day': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
+            'duration': forms.NumberInput(attrs={'class': 'form-control'}),
+        }
+
+class TaskFormDetail(forms.ModelForm):
+    class Meta:
+        model = Task
         fields = ['title', 'start_day', 'duration', 'status']
         widgets = {
             'title': forms.TextInput(attrs={'class': 'form-control'}),
             'start_day': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
             'duration': forms.NumberInput(attrs={'class': 'form-control'}),
-            'status': forms.Select(attrs={'class': 'form-select'}),
+            'status': forms.Select(attrs={'class': 'form-control custom-select'}),
         }
 
 class SubTaskCreateForm(forms.Form):

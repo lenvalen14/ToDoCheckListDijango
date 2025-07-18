@@ -1,40 +1,63 @@
-{% extends "base.html" %}
+{% extends 'base.html' %}
 
 {% block title %}Danh sách Epics{% endblock %}
 
 {% block content %}
-<div class="d-flex justify-content-between align-items-center mb-5">
-    <h2 class="fw-semibold mb-0">Danh sách Epics</h2>
-    <a href="{% url 'epic-create' %}" class="btn btn-dark px-3 py-1 rounded-4 shadow-sm d-flex align-items-center gap-2" style="font-size: 1rem;">
-        <span class="fs-5">+</span> <span class="fw-semibold">Tạo Epic mới</span>
-    </a>
+<div class="header">
+    <h1>Danh sách Epics</h1>
+    <button class="btn btn-dark" onclick="showCreateEpicModal()">+ Tạo Epic mới</button>
 </div>
-<div class="row g-4">
+
+<div class="card-grid">
     {% for epic in epic_list %}
-    <div class="col-12 col-md-6 col-lg-4">
-        <a href="{% url 'epic-detail' epic.pk %}" class="text-decoration-none">
-            <div class="bg-white rounded-4 shadow-sm p-4 h-100 d-flex flex-column justify-content-between border border-1 hover-shadow" style="transition:box-shadow .2s;">
-                <div>
-                    <h5 class="fw-bold mb-1 text-dark">{{ epic.title }}</h5>
-                    <div class="text-muted mb-3 small">{{ epic.description|truncatewords:20 }}</div>
-                    <div class="mb-2 d-flex justify-content-between align-items-center">
-                        <span class="small">Tiến độ</span>
-                        <span class="small fw-bold">{{ epic.get_task_progress }}%</span>
-                    </div>
-                    <div class="progress rounded-pill" style="height: 8px;">
-                        <div class="progress-bar bg-dark rounded-pill" role="progressbar" style="width: {{ epic.get_task_progress }}%;" aria-valuenow="{{ epic.get_task_progress }}" aria-valuemin="0" aria-valuemax="100"></div>
-                    </div>
-                </div>
-                <div class="mt-3 text-muted small">{{ epic.tasks.count }} nhiệm vụ</div>
+    <a href="{% url 'epic-detail' epic.pk %}" class="card">
+        <h3>{{ epic.title }}</h3>
+        <p>{{ epic.description|truncatewords:20 }}</p>
+        <div>
+            <small>Tiến độ</small>
+            <div class="progress-bar">
+                <div class="progress-bar-fill" style="width: {{ epic.get_task_progress }}%;"></div>
             </div>
-        </a>
-    </div>
-    {% empty %}
-    <div class="col-12">
-        <div class="text-center p-5 border rounded bg-light">
-            <p class="lead">Chưa có Epic nào được tạo.</p>
         </div>
-    </div>
+        <small>{{ epic.tasks.count }} nhiệm vụ</small>
+    </a>
+    {% empty %}
+    <p>Chưa có Epic nào được tạo.</p>
     {% endfor %}
 </div>
+
+<div id="createEpicModalContent" style="display:none;">
+    <div class="modal-header">
+        <h2>Tạo Epic mới</h2>
+        <span class="close-btn" onclick="closeModal()">&times;</span>
+    </div>
+    <form action="{% url 'epic-create' %}" method="post">
+        {% csrf_token %}
+        <div class="modal-body">
+            <div class="form-group">
+                <label for="id_title">Tiêu đề</label>
+                <input type="text" name="title" id="id_title" placeholder="Nhập tiêu đề Epic..." required>
+            </div>
+            <div class="form-group">
+                <label for="id_description">Mô tả</label>
+                <textarea name="description" id="id_description" rows="4" placeholder="Nhập mô tả Epic..."></textarea>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn" onclick="closeModal()">Hủy</button>
+            <button type="submit" class="btn btn-dark">Tạo Epic</button>
+        </div>
+    </form>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function showCreateEpicModal() {
+    const modalContent = document.getElementById('modalContent');
+    const formHtml = document.getElementById('createEpicModalContent').innerHTML;
+    modalContent.innerHTML = formHtml;
+    openModal();
+}
+</script>
 {% endblock %}

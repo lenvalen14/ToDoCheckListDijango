@@ -29,7 +29,7 @@ class Task(models.Model):
                               )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    epic = models.ForeignKey(Epic, on_delete=models.CASCADE, related_name='tasks', null=True, blank=True)
+    epic = models.ForeignKey(Epic, on_delete=models.CASCADE, related_name='tasks')
     def __str__(self):
         return self.title
 

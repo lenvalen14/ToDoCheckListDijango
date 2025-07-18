@@ -1,29 +1,47 @@
-{% extends 'base.html' %}
-
-{% block content %}
-    <h2>Edit Task: {{ object.title }}</h2>
-
-    <form method="post">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit" class="btn btn-primary">Save Changes</button>
-        <a href="{% url 'epic-detail' pk=object.epic.pk %}" class="btn btn-secondary">Cancel</a>
-    </form>
-
-    <hr class="my-4">
-
-    <div class="d-flex justify-content-between align-items-center mb-3">
-        <h4>Sub-Tasks</h4>
-        <a href="{% url 'subtask-create' task_pk=object.pk %}" class="btn btn-success btn-sm">Add Sub-Task</a>
+<form id="taskUpdateForm" action="{% url 'task-update' task.pk %}" method="post">
+    {% csrf_token %}
+    <div class="modal-header">
+        <h2>Chi tiết nhiệm vụ</h2>
+        <span class="close-btn" onclick="closeModal()">&times;</span>
     </div>
 
-    <ul class="list-group">
-        {% for subtask in object.subtasks.all %}
-            <li class="list-group-item">
-                {{ subtask.title }} - <span class="badge bg-info">{{ subtask.get_status_display }}</span>
-            </li>
-        {% empty %}
-            <li class="list-group-item">No sub-tasks for this task.</li>
-        {% endfor %}
-    </ul>
-{% endblock %}
+    <div class="modal-body" style="padding: 1rem;">
+        <div class="form-group">
+            <label for="{{ form.title.id_for_label }}">Tên nhiệm vụ</label>
+            {{ form.title }}
+        </div>
+
+        <div class="form-group-inline">
+            <div class="form-group">
+                <label for="{{ form.start_day.id_for_label }}">Ngày bắt đầu</label>
+                <input style="width: 80%" type="date" name="{{ form.start_day.name }}" id="{{ form.start_day.id_for_label }}" value="{{ task.start_day|date:'Y-m-d' }}" class="form-control">
+            </div>
+            <div class="form-group">
+                <label for="{{ form.duration.id_for_label }}">Thời gian (ngày)</label>
+                {{ form.duration }}
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="{{ form.status.id_for_label }}">Trạng thái</label>
+            {{ form.status }}
+        </div>
+
+        <hr style="margin: 2rem 0; border-top: 1px solid var(--border-color); border-bottom: none;">
+
+        <h4>Các nhiệm vụ con</h4>
+        <div class="form-group" style="display: flex; gap: 0.5rem;">
+            <input type="text" id="new-subtask-title" placeholder="Thêm nhiệm vụ con..." style="flex-grow: 1;">
+            <button type="button" class="btn btn-dark" id="add-subtask-btn">+</button>
+        </div>
+
+        <div id="subtask-list-container">
+            {% include 'todo/subtask_list.html' with subtasks=task.subtasks.all %}
+        </div>
+    </div>
+
+    <div class="modal-footer">
+        <button type="button" class="btn" onclick="closeModal()">Hủy</button>
+        <button type="submit" class="btn btn-dark">Lưu thay đổi</button>
+    </div>
+</form>
