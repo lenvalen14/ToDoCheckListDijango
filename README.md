@@ -8,7 +8,6 @@ Mục tiêu của project là rèn luyện kỹ năng backend với Django Frame
 - Python 3.10+
 - Django 4.x
 - MySQL
-- Bootstrap 5 (giao diện)
 - HTML/CSS, Django Template
 
 ## Tính năng chính
