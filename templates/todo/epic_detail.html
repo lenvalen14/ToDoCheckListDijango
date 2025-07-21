@@ -5,9 +5,9 @@
 {% block content %}
 <div class="header">
     <div>
-        <a href="{% url 'epic-list' %}" style="text-decoration: none; color: var(--text-muted);">&larr; Quay lại danh sách Epics</a>
-        <h1 style="margin-top: 0.5rem;">{{ epic.title }}</h1>
-        <p style="color: var(--text-muted); margin-top: -1rem;">{{ epic.description }}</p>
+        <a href="{% url 'epic-list' %}" class="no-decoration text-muted">&larr; Quay lại danh sách Epics</a>
+        <h1 class="mt-05">{{ epic.title }}</h1>
+        <p class="text-muted mt-n1">{{ epic.description }}</p>
     </div>
     <button class="btn btn-dark" onclick="showCreateTaskModal()">+ Thêm Task mới</button>
 </div>
@@ -15,10 +15,10 @@
 <h2>Danh sách nhiệm vụ</h2>
 <div id="task-list">
     {% for task in epic.tasks.all %}
-    <div class="task-list-item" onclick="loadTaskDetail('{% url 'task-update' task.pk %}', {{ task.pk }})">
+    <div class="task-list-item" onclick="loadTaskDetail('{% url 'task-update' task.pk %}', '{% autoescape off %}{{ task.pk }}{% endautoescape %}')">
         <div>
-            <p style="margin: 0; font-weight: 500;">{{ task.title }}</p>
-            <small style="color: var(--text-muted);">
+            <p class="m-0 fw-500">{{ task.title }}</p>
+            <small class="text-muted">
                 🗓️ {{ task.start_day|date:"Y-m-d" }} &nbsp; ⏳ {{ task.duration }} ngày &nbsp; 📋 Sub-tasks: {{ task.subtasks.count }}
             </small>
         </div>
@@ -68,129 +68,4 @@
 </div>
 {% endblock %}
 
-{% block scripts %}
-<script>
- async function loadTaskDetail(url, taskId) {
-        try {
-            const response = await fetch(url);
-            if (!response.ok) throw new Error('Network response was not ok');
-
-            const html = await response.text();
-            const modalContent = document.getElementById('modalContent');
-            modalContent.innerHTML = html;
-
-            modalContent.dataset.currentTaskPk = taskId;
-
-            openModal();
-        } catch (error) {
-            console.error('Failed to load task details:', error);
-        }
-    }
-
-    async function addSubTask(taskPk) {
-        const titleInput = document.getElementById('new-subtask-title');
-        if (!titleInput || !titleInput.value) return;
-
-        const csrfToken = document.querySelector('#taskUpdateForm [name=csrfmiddlewaretoken]').value;
-        const formData = new FormData();
-        formData.append('title', titleInput.value);
-        formData.append('status', 'TODO');
-
-        await fetch(`/task/${taskPk}/subtask/add/`, {
-            method: 'POST',
-            headers: { 'X-CSRFToken': csrfToken, 'X-Requested-With': 'XMLHttpRequest' },
-            body: formData,
-        });
-
-        await loadTaskDetail(`/task/${taskPk}/update/`, taskPk);
-    }
-
-    function handleStatusChange(selectElement, subtaskPk) {
-        const selectedValue = selectElement.value;
-
-        if (selectedValue === 'Xong') {
-            selectElement.classList.remove('status-badge-chuaxong');
-            selectElement.classList.add('status-badge-xong');
-        } else {
-            selectElement.classList.remove('status-badge-xong');
-            selectElement.classList.add('status-badge-chuaxong');
-        }
-
-        updateSubTaskStatusOnServer(subtaskPk, selectedValue);
-    }
-
-    async function updateSubTaskStatusOnServer(subtaskPk, status) {
-        const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
-        const formData = new FormData();
-        formData.append('status', status);
-
-        try {
-            await fetch(`/subtask/${subtaskPk}/update-status/`, {
-                method: 'POST',
-                headers: { 'X-CSRFToken': csrfToken, 'X-Requested-With': 'XMLHttpRequest' },
-                body: formData,
-            });
-            console.log(`Subtask ${subtaskPk} status updated to ${status}`);
-        } catch (error) {
-            console.error('Failed to update subtask status:', error);
-        }
-    }
-
-    async function deleteSubTask(subtaskPk) {
-    if (!confirm('Bạn có chắc chắn muốn xóa nhiệm vụ con này?')) {
-        return;
-    }
-
-    const updateForm = document.getElementById('taskUpdateForm');
-    const csrfToken = updateForm.querySelector('[name=csrfmiddlewaretoken]').value;
-
-    try {
-        const response = await fetch(`/subtask/${subtaskPk}/delete/`, {
-            method: 'DELETE',
-            headers: {
-                'X-CSRFToken': csrfToken,
-                'X-Requested-With': 'XMLHttpRequest'
-            }
-        });
-
-        const data = await response.json();
-
-        if (data.success) {
-            const modalContent = document.getElementById('modalContent');
-            const currentTaskPk = modalContent.dataset.currentTaskPk;
-
-            if (currentTaskPk) {
-                await loadTaskDetail(`/task/${currentTaskPk}/update/`, currentTaskPk);
-            }
-        } else {
-            alert('Xóa thất bại. Vui lòng thử lại.');
-        }
-
-    } catch (error) {
-        console.error('Lỗi khi xóa sub-task:', error);
-        alert('Có lỗi xảy ra trong quá trình xóa.');
-    }
-}
-
-    document.addEventListener('click', function(event) {
-        if (event.target && event.target.id === 'add-subtask-btn') {
-            const modalContent = document.getElementById('modalContent');
-            const currentTaskPk = modalContent.dataset.currentTaskPk;
-
-            if (currentTaskPk) {
-                addSubTask(currentTaskPk);
-            } else {
-                console.error("Không tìm thấy Task ID hiện tại trên popup.");
-            }
-        }
-    });
-
-    function showCreateTaskModal() {
-        const modalContent = document.getElementById('modalContent');
-        const formHtml = document.getElementById('createTaskModalContent').innerHTML;
-        modalContent.innerHTML = formHtml;
-        document.getElementById('id_start_day_create').valueAsDate = new Date();
-        openModal();
-    }
-</script>
-{% endblock %}
+{% block scripts %}{% endblock %}

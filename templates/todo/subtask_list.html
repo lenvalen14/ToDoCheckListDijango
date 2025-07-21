@@ -1,7 +1,7 @@
 {% for subtask in task.subtasks.all %}
 <div class="subtask-item">
     <span>{{ subtask.title }}</span>
-    <div style="display: flex; align-items: center; gap: 0.5rem;">
+    <div class="d-flex align-center gap-05">
         <select
             class="subtask-select
                 {% if subtask.status == 'COMPLETED' %}
@@ -24,5 +24,5 @@
     </div>
 </div>
 {% empty %}
-<p style="color: var(--text-muted); text-align: center; font-size: 0.9rem;">Chưa có nhiệm vụ con nào.</p>
+<p class="text-muted text-center fs-09">Chưa có nhiệm vụ con nào.</p>
 {% endfor %}

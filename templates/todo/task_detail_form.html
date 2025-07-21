@@ -5,7 +5,7 @@
         <span class="close-btn" onclick="closeModal()">&times;</span>
     </div>
 
-    <div class="modal-body" style="padding: 1rem;">
+    <div class="modal-body modal-body-padding">
         <div class="form-group">
             <label for="{{ form.title.id_for_label }}">Tên nhiệm vụ</label>
             {{ form.title }}
@@ -27,11 +27,11 @@
             {{ form.status }}
         </div>
 
-        <hr style="margin: 2rem 0; border-top: 1px solid var(--border-color); border-bottom: none;">
+        <hr class="hr-custom">
 
         <h4>Các nhiệm vụ con</h4>
         <div class="form-group" style="display: flex; gap: 0.5rem;">
-            <input type="text" id="new-subtask-title" placeholder="Thêm nhiệm vụ con..." style="flex-grow: 1;">
+            <input type="text" id="new-subtask-title" placeholder="Thêm nhiệm vụ con..." class="flex-grow-1">
             <button type="button" class="btn btn-dark" id="add-subtask-btn">+</button>
         </div>
 

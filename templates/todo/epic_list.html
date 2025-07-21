@@ -51,13 +51,4 @@
 </div>
 {% endblock %}
 
-{% block scripts %}
-<script>
-function showCreateEpicModal() {
-    const modalContent = document.getElementById('modalContent');
-    const formHtml = document.getElementById('createEpicModalContent').innerHTML;
-    modalContent.innerHTML = formHtml;
-    openModal();
-}
-</script>
-{% endblock %}
+{% block scripts %}{% endblock %}
