@@ -8,11 +8,11 @@ Mục tiêu của project là rèn luyện kỹ năng backend với Django Frame
 - Python 3.10+
 - Django 4.x
 - MySQL
-- Bootstrap 5 (giao diện)
 - HTML/CSS, Django Template
 
 ## Tính năng chính
 
+- [x] Tạo epic
 - [x] Tạo task, sub-task mới
 - [x] Đánh dấu task, sub-task đã hoàn thành
 - [x] Xóa task, sub-task
@@ -64,6 +64,8 @@ ToDoCheckList/
 │   ├── __init__.py
 │   ├── admin.py
 │   ├── apps.py
+│   ├── enum.py
+│   ├── forms.py
 │   ├── models.py             # Khai báo model Task
 │   ├── tests.py
 │   ├── urls.py               # Định nghĩa route cho app
